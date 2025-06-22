@@ -113,3 +113,22 @@ fn system_and_balances_work() {
 		assert_ok!(PalletBalances::mint_into(&BOB, 100));
 	});
 }
+#[test]
+fn create_kitty_emits_event() {
+	new_test_ext().execute_with(|| {
+		// Set block number ke 1
+		System::set_block_number(1);
+
+		// Jalankan extrinsic create_kitty dari ALICE
+		assert_ok!(PalletKitties::create_kitty(RuntimeOrigin::signed(ALICE)));
+
+		// Ambil event terakhir yang muncul
+		let last_event = System::events().pop().expect("Event expected").event;
+
+		// Cek apakah event sesuai dengan yang kita harapkan
+		assert_eq!(
+			last_event,
+			RuntimeEvent::PalletKitties(Event::<TestRuntime>::Created { owner: ALICE })
+		);
+	});
+}
